@@ -4,6 +4,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -13,24 +14,23 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    // W realnej aplikacji klucz lepiej trzymać w .env lub w application.properties
-    // i zapewnić, że ma on długość co najmniej 32 znaków (dla HS256).
-    private static final String SECRET_KEY = "bardzotrudnehaslodlaJWTbardzotrudnehaslo";
+    @Value("${jwt.secret.key}")
+    private String secretKey;
 
-    /**
-     * Generuje token JWT na podstawie nazwy użytkownika.
-     * Przykładowo ważny 24h (możesz dostosować wedle potrzeb).
-     */
+    @Value("${jwt.expiration}")
+    private long jwtExpirationInMs; // np. 86400000 (24h)
+
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+    }
+
     public String generateToken(String username) {
-        Key key = getSigningKey();
         long now = System.currentTimeMillis();
-        long expiration = now + 1000 * 60 * 60 * 24; // 24h
-
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date(now))
-                .setExpiration(new Date(expiration))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .setExpiration(new Date(now + jwtExpirationInMs))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -68,13 +68,5 @@ public class JwtService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-    }
-
-    /**
-     * Tworzy obiekt typu Key na podstawie łańcucha SECRET_KEY.
-     * Dla HS256 potrzebne jest przynajmniej 32 bajty entropii.
-     */
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
     }
 }
