@@ -40,7 +40,8 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())  // do testów Postmanem
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/register", "/api/auth/login",
+                                "/api/auth/refresh", "/api/auth/logout").permitAll()
 
                         // tworzenie produktów dostępne tylko dla roli ADMIN:
                         .requestMatchers(HttpMethod.POST, "/api/products").hasRole("ADMIN")
