@@ -30,8 +30,12 @@ public class AuthService {
         String encodedPassword = passwordEncoder.encode(registerRequest.getPassword());
         User user = new User(registerRequest.getUsername(), encodedPassword);
 
-        // np. domyślna rola:
-        user.setRole("ROLE_USER");
+        // Sprawdzamy, czy w request wchodzi flaga "isAdmin"? (opcjonalnie)
+        if (registerRequest.isAdmin() != null && registerRequest.isAdmin()) {
+            user.setRole("ROLE_ADMIN");
+        } else {
+            user.setRole("ROLE_USER");
+        }
 
         return userRepository.save(user);
     }

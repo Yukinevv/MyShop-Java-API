@@ -19,17 +19,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(
-                        () -> new UsernameNotFoundException("Nie znaleziono użytkownika: " + username)
-                );
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
-        // konwersja z własnej encji User do obiektu UserDetails
-        return org.springframework.security.core.userdetails.User
-                .builder()
+        // user.getRole() ma np. "ROLE_ADMIN"
+        // ale .roles() w builderze powinno dostać "ADMIN"
+        String roleWithoutPrefix = user.getRole().replace("ROLE_", "");
+
+        return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())
                 .password(user.getPassword())
-                .roles(user.getRole().replace("ROLE_", ""))
-                // np. "ROLE_USER" -> roles("USER")
+                .roles(roleWithoutPrefix)
                 .build();
     }
 }

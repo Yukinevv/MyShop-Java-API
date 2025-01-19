@@ -1,24 +1,16 @@
 package com.example.shop.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class RegisterRequest {
     private String username;
     private String password;
+    private Boolean isAdmin;
 
-    // gettery, settery
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    // w praktyce hasło warto hashować
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public Boolean isAdmin() {
+        return isAdmin;
     }
 }

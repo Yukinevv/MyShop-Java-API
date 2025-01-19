@@ -4,6 +4,7 @@ import com.example.shop.security.JwtAuthenticationFilter;
 import com.example.shop.security.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -40,6 +41,14 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())  // do testów Postmanem
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+
+                        // tworzenie produktów dostępne tylko dla roli ADMIN:
+                        .requestMatchers(HttpMethod.POST, "/api/products").hasRole("ADMIN")
+
+                        // pobieranie produktów dostępne dla zalogowanych (np. hasAnyRole("USER","ADMIN"))
+                        .requestMatchers(HttpMethod.GET, "/api/products").authenticated()
+
+                        // reszta zabezpieczona w standardowy sposób
                         .anyRequest().authenticated()
                 )
                 // Możesz użyć .httpBasic(Customizer.withDefaults()) jeśli chcesz testować Basic Auth
