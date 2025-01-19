@@ -1,10 +1,13 @@
 package com.example.shop.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+@Data
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -30,36 +33,12 @@ public class Order {
     private Set<Product> products = new HashSet<>();
 
     public Order() {
+        this.createdAt = LocalDateTime.now();
     }
 
     public Order(User user, Set<Product> products) {
         this.user = user;
         this.products = products;
         this.createdAt = LocalDateTime.now();
-    }
-
-    // gettery, settery
-    public Long getId() {
-        return id;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Set<Product> getProducts() {
-        return products;
-    }
-
-    public void setProducts(Set<Product> products) {
-        this.products = products;
     }
 }
