@@ -7,6 +7,7 @@ import com.example.shop.entity.User;
 import com.example.shop.security.JwtService;
 import com.example.shop.service.AuthService;
 import com.example.shop.service.RefreshTokenService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,10 +31,9 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest registerRequest) {
         // Rejestracja
         User user = authService.register(registerRequest);
-        // Możemy od razu wygenerować token po rejestracji, albo tylko zwrócić "OK"
         return ResponseEntity.ok("Zarejestrowano użytkownika: " + user.getUsername());
     }
 

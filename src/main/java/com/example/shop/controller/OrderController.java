@@ -7,6 +7,7 @@ import com.example.shop.entity.User;
 import com.example.shop.mapper.OrderMapper;
 import com.example.shop.service.AuthService;
 import com.example.shop.service.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<OrderDto> createOrder(@RequestBody OrderRequest orderRequest) {
+    public ResponseEntity<OrderDto> createOrder(@Valid @RequestBody OrderRequest orderRequest) {
         User currentUser = authService.getCurrentUser(); // pobranie realnego usera z kontekstu
         Order order = orderService.createOrder(currentUser, orderRequest);
 

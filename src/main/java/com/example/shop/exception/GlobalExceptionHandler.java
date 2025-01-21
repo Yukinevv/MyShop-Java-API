@@ -4,6 +4,7 @@ import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 @RestControllerAdvice
@@ -29,4 +30,22 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse("INVALID_TOKEN", ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ValidationErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
+
+        // Obiekt, w którym przechowasz listę błędów
+        ValidationErrorResponse errorResponse = new ValidationErrorResponse("VALIDATION_ERROR");
+
+        // Wyciągam szczegóły o błędach z bindingResult
+        ex.getBindingResult().getFieldErrors().forEach(fieldError -> {
+            // np. "username" -> "Username nie może być pusty"
+            String fieldName = fieldError.getField();
+            String message = fieldError.getDefaultMessage();
+            errorResponse.addError(fieldName, message);
+        });
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
 }
