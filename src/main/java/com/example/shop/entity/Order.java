@@ -1,13 +1,15 @@
 package com.example.shop.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -18,27 +20,20 @@ public class Order {
 
     private LocalDateTime createdAt;
 
-    // Relacja wiele zamówień -> jeden użytkownik
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    // Relacja wiele zamówień -> wiele produktów
-    @ManyToMany
-    @JoinTable(
-            name = "order_products",
-            joinColumns = @JoinColumn(name = "order_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
-    private Set<Product> products = new HashSet<>();
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<OrderItem> items = new HashSet<>();
 
     public Order() {
         this.createdAt = LocalDateTime.now();
     }
 
-    public Order(User user, Set<Product> products) {
+    public Order(User user, Set<OrderItem> items) {
         this.user = user;
-        this.products = products;
+        this.items = items;
         this.createdAt = LocalDateTime.now();
     }
 }

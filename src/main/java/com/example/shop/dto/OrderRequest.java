@@ -1,16 +1,10 @@
 package com.example.shop.dto;
 
+import lombok.Data;
+
 import java.util.List;
 
+@Data
 public class OrderRequest {
-    private List<Long> productIds;
-
-    // gettery, settery
-    public List<Long> getProductIds() {
-        return productIds;
-    }
-
-    public void setProductIds(List<Long> productIds) {
-        this.productIds = productIds;
-    }
+    private List<OrderItemRequest> items;
 }

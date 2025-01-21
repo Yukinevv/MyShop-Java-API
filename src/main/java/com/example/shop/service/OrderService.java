@@ -1,7 +1,9 @@
 package com.example.shop.service;
 
+import com.example.shop.dto.OrderItemRequest;
 import com.example.shop.dto.OrderRequest;
 import com.example.shop.entity.Order;
+import com.example.shop.entity.OrderItem;
 import com.example.shop.entity.Product;
 import com.example.shop.entity.User;
 import com.example.shop.repository.OrderRepository;
@@ -24,20 +26,34 @@ public class OrderService {
     }
 
     public Order createOrder(User user, OrderRequest orderRequest) {
-        // Pobieramy listę produktów
-        List<Long> productIds = orderRequest.getProductIds();
-        Set<Product> products = new HashSet<>(productRepository.findAllById(productIds));
 
+        // Tworzymy puste zamówienie
         Order order = new Order();
         order.setUser(user);
-        order.setProducts(products);
 
+        Set<OrderItem> items = new HashSet<>();
+
+        for (OrderItemRequest itemReq : orderRequest.getItems()) {
+            // Szukamy produktu w bazie
+            Product product = productRepository.findById(itemReq.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Produkt nie istnieje"));
+
+            // Tworzymy obiekt OrderItem
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrder(order);
+            orderItem.setProduct(product);
+            orderItem.setQuantity(itemReq.getQuantity());
+            // zapamiętujemy cenę w chwili zamówienia
+            orderItem.setPriceAtOrderTime(product.getPrice());
+
+            items.add(orderItem);
+        }
+
+        order.setItems(items);
         return orderRepository.save(order);
     }
 
     public List<Order> getAllOrdersForUser(User user) {
-        // Możemy dodać dedykowaną metodę w OrderRepository, np. findAllByUserId(user.getId())
-        // Dla uproszczenia pobieramy wszystkie zamówienia i filtrujemy
         return orderRepository.findAll().stream()
                 .filter(o -> o.getUser().getId().equals(user.getId()))
                 .toList();

@@ -1,9 +1,11 @@
 package com.example.shop.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
 public class User {
@@ -18,8 +20,6 @@ public class User {
     private String password;
 
     private String role;
-
-    // Możesz dodać więcej pól, np. email, imię, nazwisko, rolę, itp.
 
     public User() {
     }
