@@ -3,6 +3,7 @@ package com.example.shop.controller;
 import com.example.shop.dto.OrderRequest;
 import com.example.shop.entity.Order;
 import com.example.shop.entity.User;
+import com.example.shop.service.AuthService;
 import com.example.shop.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,33 +15,23 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
+    private final AuthService authService;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, AuthService authService) {
         this.orderService = orderService;
-    }
-
-    // Przykład "mock'owanego" usera. W realnej aplikacji
-    // skorzystaj z mechanizmu autentykacji (Spring Security/JWT).
-    private User getCurrentUser() {
-        // Tutaj w praktyce odczytujesz z kontekstu bezpieczeństwa
-        // Na potrzeby przykładu zwracamy "testowego" usera
-        User user = new User();
-        user.setId(1L);
-        user.setUsername("demoUser");
-        user.setPassword("demoPassword");
-        return user;
+        this.authService = authService;
     }
 
     @PostMapping
     public ResponseEntity<Order> createOrder(@RequestBody OrderRequest orderRequest) {
-        User currentUser = getCurrentUser();
+        User currentUser = authService.getCurrentUser(); // pobranie realnego usera z kontekstu
         Order order = orderService.createOrder(currentUser, orderRequest);
         return ResponseEntity.ok(order);
     }
 
     @GetMapping
     public ResponseEntity<List<Order>> getAllOrdersForUser() {
-        User currentUser = getCurrentUser();
+        User currentUser = authService.getCurrentUser();
         List<Order> orders = orderService.getAllOrdersForUser(currentUser);
         return ResponseEntity.ok(orders);
     }

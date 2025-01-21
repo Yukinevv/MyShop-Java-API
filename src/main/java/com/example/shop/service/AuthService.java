@@ -4,6 +4,7 @@ import com.example.shop.dto.LoginRequest;
 import com.example.shop.dto.RegisterRequest;
 import com.example.shop.entity.User;
 import com.example.shop.repository.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,12 @@ public class AuthService {
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    public User getCurrentUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Użytkownik w kontekście nie istnieje"));
     }
 
     public User register(RegisterRequest registerRequest) {
