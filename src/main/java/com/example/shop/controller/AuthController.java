@@ -1,6 +1,7 @@
 package com.example.shop.controller;
 
 import com.example.shop.dto.LoginRequest;
+import com.example.shop.dto.MessageDto;
 import com.example.shop.dto.RegisterRequest;
 import com.example.shop.entity.RefreshToken;
 import com.example.shop.entity.User;
@@ -31,10 +32,16 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<MessageDto> register(@Valid @RequestBody RegisterRequest registerRequest) {
         // Rejestracja
         User user = authService.register(registerRequest);
-        return ResponseEntity.ok("Zarejestrowano użytkownika: " + user.getUsername());
+
+        return ResponseEntity.ok(new MessageDto("Zarejestrowano użytkownika: " + user.getUsername()));
+        // return ResponseEntity.ok("Zarejestrowano użytkownika: " + user.getUsername());
+//        return ResponseEntity
+//                .ok()
+//                .contentType(MediaType.valueOf("text/plain;charset=UTF-8"))
+//                .body("Zarejestrowano użytkownika: " + user.getUsername());
     }
 
     @PostMapping("/login")
