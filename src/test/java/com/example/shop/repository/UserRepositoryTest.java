@@ -3,6 +3,7 @@ package com.example.shop.repository;
 import com.example.shop.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles; // profil testowy
 
@@ -12,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class UserRepositoryTest {
 
     @Autowired
@@ -74,10 +76,6 @@ class UserRepositoryTest {
         user2.setRole("ROLE_USER");
 
         // when + then
-        // w zależności od konfiguracji,
-        // JPA może rzucić DataIntegrityViolationException lub inną
-        // (np. ConstraintViolationException) - zależnie od bazy i dialektu
-
         assertThrows(Exception.class, () -> {
             userRepository.saveAndFlush(user2);
         });
