@@ -22,4 +22,8 @@ public class RegisterRequest {
     public Boolean isAdmin() {
         return isAdmin;
     }
+
+    public void setAdmin(Boolean isAdmin) {
+        this.isAdmin = isAdmin;
+    }
 }
