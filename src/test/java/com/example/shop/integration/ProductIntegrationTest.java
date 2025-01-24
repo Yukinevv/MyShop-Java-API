@@ -68,6 +68,7 @@ class ProductIntegrationTest {
         Product newProduct = new Product();
         newProduct.setName("Kamera Sony");
         newProduct.setPrice(1999.99);
+        newProduct.setStockQuantity(10);
 
         var createResult = mockMvc.perform(post("/api/products")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -77,6 +78,7 @@ class ProductIntegrationTest {
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.name").value("Kamera Sony"))
                 .andExpect(jsonPath("$.price").value(1999.99))
+                .andExpect(jsonPath("$.stockQuantity").value(10))
                 .andReturn();
 
         // Parsujemy ID produktu z wyniku
@@ -86,7 +88,7 @@ class ProductIntegrationTest {
 
         // 2. Pobranie listy produktów
         mockMvc.perform(get("/api/products")
-                        .header("Authorization", "Bearer " + adminAccessToken)) // GET też wymaga autoryzacji w Twojej config?
+                        .header("Authorization", "Bearer " + adminAccessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[*].id").isNotEmpty())
                 .andExpect(jsonPath("$.[*].name").isNotEmpty());
@@ -97,7 +99,18 @@ class ProductIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(createdId))
                 .andExpect(jsonPath("$.name").value("Kamera Sony"))
-                .andExpect(jsonPath("$.price").value(1999.99));
+                .andExpect(jsonPath("$.price").value(1999.99))
+                .andExpect(jsonPath("$.stockQuantity").value(10));
+
+        // Update produktu po ID
+        mockMvc.perform(patch("/api/products/{id}/stock", createdId)
+                        .param("quantity", String.valueOf(5))
+                        .header("Authorization", "Bearer " + adminAccessToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(createdId))
+                .andExpect(jsonPath("$.name").value("Kamera Sony"))
+                .andExpect(jsonPath("$.price").value(1999.99))
+                .andExpect(jsonPath("$.stockQuantity").value(5));
 
         // 4. Usunięcie produktu
         mockMvc.perform(delete("/api/products/" + createdId)
@@ -110,8 +123,7 @@ class ProductIntegrationTest {
                 .andReturn();
 
         int statusAfterDelete = getAfterDelete.getResponse().getStatus();
-        // W Twojej implementacji `getProductById()` wyrzuca RuntimeException -> 400 w GlobalExceptionHandler
-        // lub 404? Sprawdź. Tu wystarczy asercja:
+        // W `getProductById()` wyrzuca RuntimeException -> 400 w GlobalExceptionHandler
         assertTrue(statusAfterDelete == 404 || statusAfterDelete == 400,
                 "Po usunięciu, status powinien być 400 lub 404; faktycznie = " + statusAfterDelete);
     }

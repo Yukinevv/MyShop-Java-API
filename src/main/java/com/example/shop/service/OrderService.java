@@ -38,6 +38,13 @@ public class OrderService {
             Product product = productRepository.findById(itemReq.getProductId())
                     .orElseThrow(() -> new RuntimeException("Produkt nie istnieje"));
 
+            if (product.getStockQuantity() < itemReq.getQuantity()) {
+                throw new RuntimeException("Brak wystarczającego stanu magazynowego dla produktu: "
+                        + product.getName());
+            }
+            product.setStockQuantity(product.getStockQuantity() - itemReq.getQuantity());
+            productRepository.save(product);
+
             // Tworzymy obiekt OrderItem
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);

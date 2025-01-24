@@ -17,6 +17,8 @@ public class Product {
     private String name;
     private Double price;
 
+    private Integer stockQuantity = 0;
+
     // Konstruktor
     public Product() {
     }
@@ -24,5 +26,11 @@ public class Product {
     public Product(String name, Double price) {
         this.name = name;
         this.price = price;
+    }
+
+    public Product(String name, Double price, Integer stockQuantity) {
+        this.name = name;
+        this.price = price;
+        this.stockQuantity = stockQuantity;
     }
 }
