@@ -2,14 +2,14 @@ package com.example.shop.service;
 
 import com.example.shop.dto.OrderItemRequest;
 import com.example.shop.dto.OrderRequest;
-import com.example.shop.entity.Order;
-import com.example.shop.entity.OrderItem;
-import com.example.shop.entity.Product;
-import com.example.shop.entity.User;
+import com.example.shop.entity.*;
+import com.example.shop.repository.CartItemRepository;
 import com.example.shop.repository.OrderRepository;
 import com.example.shop.repository.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,10 +19,12 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final CartItemRepository cartItemRepository;
 
-    public OrderService(OrderRepository orderRepository, ProductRepository productRepository) {
+    public OrderService(OrderRepository orderRepository, ProductRepository productRepository, CartItemRepository cartItemRepository) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
+        this.cartItemRepository = cartItemRepository;
     }
 
     public Order createOrder(User user, OrderRequest orderRequest) {
@@ -58,6 +60,60 @@ public class OrderService {
 
         order.setItems(items);
         return orderRepository.save(order);
+    }
+
+    @Transactional
+    public Order finalizeOrder(User user) {
+
+        // Pobieramy wszystkie CartItemy usera
+        List<CartItem> cartItems = cartItemRepository.findByUser(user);
+        if (cartItems.isEmpty()) {
+            throw new RuntimeException("Koszyk jest pusty");
+        }
+
+        // Tworzymy Order
+        Order order = new Order();
+        order.setUser(user);
+
+        Set<OrderItem> orderItems = new HashSet<>();
+
+        for (CartItem ci : cartItems) {
+            // Sprawdzamy, czy rezerwacja jeszcze nie wygasła
+            if (ci.getExpiresAt().isBefore(LocalDateTime.now())) {
+                throw new RuntimeException("Rezerwacja wygasła dla produktu: " + ci.getProduct().getName());
+            }
+
+            Product p = ci.getProduct();
+
+//            Product product = productRepository.findById(p.getId())
+//                    .orElseThrow(() -> new RuntimeException("Produkt nie istnieje"));
+//
+//            if (product.getStockQuantity() < p.getStockQuantity()) {
+//                throw new RuntimeException("Brak wystarczającego stanu magazynowego dla produktu: "
+//                        + product.getName());
+//            }
+//            product.setStockQuantity(product.getStockQuantity() - p.getStockQuantity());
+//            productRepository.save(product);
+
+            // Tworzymy OrderItem
+            OrderItem oi = new OrderItem();
+            oi.setOrder(order);
+            oi.setProduct(p);
+            oi.setQuantity(ci.getQuantity());
+            oi.setPriceAtOrderTime(p.getPrice());
+            orderItems.add(oi);
+        }
+        order.setItems(orderItems);
+
+        // Zapisujemy zamówienie
+        orderRepository.save(order);
+
+        // Czyścimy koszyk
+        for (CartItem ci : cartItems) {
+            cartItemRepository.delete(ci);
+        }
+
+        return order;
     }
 
     public List<Order> getAllOrdersForUser(User user) {
