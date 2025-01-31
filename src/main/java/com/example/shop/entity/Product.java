@@ -19,6 +19,9 @@ public class Product {
 
     private Integer stockQuantity = 0;
 
+    @Version
+    private Long version;
+
     // Konstruktor
     public Product() {
     }

@@ -27,6 +27,7 @@ public class OrderService {
         this.cartItemRepository = cartItemRepository;
     }
 
+    @Transactional
     public Order createOrder(User user, OrderRequest orderRequest) {
 
         // Tworzymy puste zamówienie
