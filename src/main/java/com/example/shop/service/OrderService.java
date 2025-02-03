@@ -122,4 +122,9 @@ public class OrderService {
                 .filter(o -> o.getUser().getId().equals(user.getId()))
                 .toList();
     }
+
+    public Order getOrderById(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Zamówienie o id " + orderId + " nie istnieje"));
+    }
 }

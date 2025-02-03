@@ -51,7 +51,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(OptimisticLockException.class)
     public ResponseEntity<ErrorResponse> handleOptimisticLock(OptimisticLockException ex) {
-        ErrorResponse errorResponse = new ErrorResponse("OPTIMISTIC_LOCK_ERROR", "Produkt został zmodyfikowany w międzyczasie. Spróbuj ponownie.");
+        ErrorResponse errorResponse = new ErrorResponse("OPTIMISTIC_LOCK_ERROR",
+                "Produkt został zmodyfikowany w międzyczasie. Spróbuj ponownie.");
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 }

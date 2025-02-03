@@ -27,6 +27,11 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderItem> items = new HashSet<>();
 
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus = PaymentStatus.NEW;
+
+    private String paymentExternalId;
+
     public Order() {
         this.createdAt = LocalDateTime.now();
     }
