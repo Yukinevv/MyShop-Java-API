@@ -1,4 +1,4 @@
-# NaukaShop – API sklepu internetowego
+# MyShop – API sklepu internetowego
 
 > Projekt zawiera przykładową implementację REST API sklepu internetowego przy użyciu **Java 17**, **Spring Boot**, **Hibernate/JPA** i bazy danych **MSSQL**.  
 > Funkcjonalność obejmuje m.in. rejestrację i logowanie użytkowników (z użyciem **JWT**), składanie zamówień, zarządzanie produktami, obsługę ról i walidację danych.
@@ -54,7 +54,7 @@
 ## 🔧 Wymagania
 
 - **Java 17** (lub wyższa)
-- **Maven** (lub Gradle, ale w przykładzie korzystamy z Mavena)
+- **Maven** (lub Gradle, ale w przykładzie korzystam z Mavena)
 - **Baza danych MSSQL** (lokalnie lub w kontenerze Docker)
 - (Opcjonalnie) **Postman** do testowania endpointów
 
@@ -143,7 +143,7 @@ http://localhost:8080
 
 ## 🔗 Opis wybranych endpointów
 
-Autentykacja i autoryzacja
+### Autentykacja i autoryzacja
 🔹 Rejestracja (POST /api/auth/register)
 Body (JSON):
 ```
@@ -162,7 +162,7 @@ Body (JSON):
   "password": "secret123"
 }
 ```
-Response:
+**Response:**
 ```
 {
   "accessToken": "...",
@@ -170,9 +170,11 @@ Response:
 }
 ```
 
-Produkty
-🔹 Dodanie produktu (POST /api/products)
-Wymaga roli ADMIN.
+### Produkty
+🔹 Dodanie produktu
+
+**POST /api/products** (Wymaga roli ADMIN)
+
 Body (JSON):
 ```
 {
@@ -181,11 +183,13 @@ Body (JSON):
 }
 ```
 
-🔹 Pobranie listy produktów (GET /api/products)
-(Wymaga zalogowania)
+🔹 Pobranie listy produktów
 
-Zamówienia
+**GET /api/products** (Wymaga zalogowania)
+
+### Zamówienia
 🔹 Składanie zamówienia (POST /api/orders)
+
 Body (JSON):
 ```
 {
@@ -196,17 +200,20 @@ Body (JSON):
 }
 ```
 
-Płatności (opcjonalnie)
+### Płatności
+
 🔹 Inicjalizacja płatności (POST /api/payments/init)
+
 Podaj orderId w body.
 
 🔹 Odbiór callbacku z bramki (POST /api/payments/notify)
+
 Zmienia paymentStatus w zamówieniu.
 
-📜 Licencja
+### 📜 Licencja
 Projekt jest dostępny na licencji MIT.
-Możesz używać, modyfikować i rozpowszechniać kod w dowolny sposób – prosimy jedynie o zachowanie informacji o autorach i licencji.
+Możesz używać, modyfikować i rozpowszechniać kod w dowolny sposób – proszę jedynie o zachowanie informacji o autorze i licencji.
 
-✉️ Autor / Kontakt
+### ✉️ Autor / Kontakt
 Adrian Rodzic
 adrianrodzic33@gmail.com
