@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import jakarta.persistence.OptimisticLockException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -48,4 +49,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+    @ExceptionHandler(OptimisticLockException.class)
+    public ResponseEntity<ErrorResponse> handleOptimisticLock(OptimisticLockException ex) {
+        ErrorResponse errorResponse = new ErrorResponse("OPTIMISTIC_LOCK_ERROR",
+                "Produkt został zmodyfikowany w międzyczasie. Spróbuj ponownie.");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
 }

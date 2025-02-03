@@ -37,4 +37,15 @@ public class ProductController {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/stock")
+    public ResponseEntity<Product> updateStock(@PathVariable Long id,
+                                               @RequestParam("quantity") int newQuantity) {
+        // newQuantity to docelowa ilość sztuk w magazynie
+        if (newQuantity < 0) {
+            throw new RuntimeException("Nowa ilość sztuk danego produktu nie może być mniejsza od 0");
+        }
+        Product updated = productService.updateStockQuantity(id, newQuantity);
+        return ResponseEntity.ok(updated);
+    }
 }

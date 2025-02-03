@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -44,13 +45,14 @@ class OrderIntegrationTest {
     private Long productBId;
 
     @BeforeEach
+    @Transactional
     void setUp() throws Exception {
         // 1) Tworzymy admina, logujemy się -> mamy adminToken
         adminToken = createAdminAndGetToken("orderAdmin", "secretAdmin");
 
         // 2) Tworzymy 2 produkty (do zamówień)
-        productAId = createProduct("Klawiatura", 120.0);
-        productBId = createProduct("Mysz", 60.0);
+        productAId = createProduct("Klawiatura", 120.0, 10);
+        productBId = createProduct("Mysz", 60.0, 15);
 
         // 3) Tworzymy usera, logujemy -> userToken
         userToken = createUserAndGetToken("normalUser", "secretUser");
@@ -96,7 +98,7 @@ class OrderIntegrationTest {
         var getOrdersResult = mockMvc.perform(get("/api/orders")
                         .header("Authorization", "Bearer " + userToken))
                 .andExpect(status().isOk())
-                // .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn();
 
         // Odczytujemy tablicę JSON, sprawdzamy czy jest tam 1 zamówienie
@@ -178,13 +180,14 @@ class OrderIntegrationTest {
      * Pomocnicza metoda tworzy produkt w bazie przez /api/products (admin jest potrzebny).
      * Zwraca ID produktu z JSON-a.
      */
-    private Long createProduct(String name, double price) throws Exception {
+    private Long createProduct(String name, double price, Integer stockQuantity) throws Exception {
         String productJson = """
                 {
                   "name": "%s",
-                  "price": %f
+                  "price": %f,
+                  "stockQuantity": %d
                 }
-                """.formatted(name, price);
+                """.formatted(name, price, stockQuantity);
 
         var result = mockMvc.perform(post("/api/products")
                         .header("Authorization", "Bearer " + adminToken)
@@ -198,5 +201,4 @@ class OrderIntegrationTest {
 
         return Long.valueOf(productMap.get("id").toString());
     }
-
 }

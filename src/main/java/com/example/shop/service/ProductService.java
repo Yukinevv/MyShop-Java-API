@@ -31,4 +31,12 @@ public class ProductService {
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
     }
+
+    public Product updateStockQuantity(Long productId, int newQuantity) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Produkt nie istnieje"));
+
+        product.setStockQuantity(newQuantity);
+        return productRepository.save(product);
+    }
 }

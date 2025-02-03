@@ -36,6 +36,16 @@ public class OrderController {
         return ResponseEntity.ok(orderDto);
     }
 
+    @PostMapping("/cart")
+    public ResponseEntity<OrderDto> createOrder() {
+        User currentUser = authService.getCurrentUser(); // pobranie realnego usera z kontekstu
+        Order order = orderService.finalizeOrder(currentUser);
+
+        // mapujemy encję do DTO
+        OrderDto orderDto = OrderMapper.toDto(order);
+        return ResponseEntity.ok(orderDto);
+    }
+
     @GetMapping
     public ResponseEntity<List<OrderDto>> getAllOrdersForUser() {
         User currentUser = authService.getCurrentUser();

@@ -31,6 +31,8 @@ class ProductServiceTest {
         sampleProduct.setId(1L);
         sampleProduct.setName("Sample Product");
         sampleProduct.setPrice(100.0);
+
+        sampleProduct.setStockQuantity(10);
     }
 
     @Test
@@ -115,5 +117,27 @@ class ProductServiceTest {
         // then
         // brak wyjątków = sukces
         verify(productRepository).deleteById(1L);
+    }
+
+    @Test
+    void updateStockQuantity_Success() {
+        // given
+        when(productRepository.findById(1L)).thenReturn(Optional.of(sampleProduct));
+        when(productRepository.save(any(Product.class))).thenAnswer(inv -> {
+            Product p = inv.getArgument(0);
+            // p.setId(1L);
+            return p;
+        });
+
+        // when
+        Product result = productService.updateStockQuantity(1L, 5);
+
+        // then
+        assertNotNull(result);
+        assertEquals("Sample Product", result.getName());
+        assertEquals(5, result.getStockQuantity());
+
+        verify(productRepository).findById(1L);
+        verify(productRepository).save(result);
     }
 }

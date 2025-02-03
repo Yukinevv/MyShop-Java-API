@@ -45,10 +45,12 @@ class OrderServiceTest {
         Product product1 = new Product();
         product1.setId(100L);
         product1.setPrice(50.0);
+        product1.setStockQuantity(20);
 
         Product product2 = new Product();
         product2.setId(200L);
         product2.setPrice(100.0);
+        product2.setStockQuantity(10);
 
         when(productRepository.findById(100L)).thenReturn(Optional.of(product1));
         when(productRepository.findById(200L)).thenReturn(Optional.of(product2));
